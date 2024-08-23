@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../speach.dart';
 
 /// Displays detailed information about a SampleItem.
 class SampleItemDetailsView extends StatelessWidget {
@@ -13,7 +14,7 @@ class SampleItemDetailsView extends StatelessWidget {
         title: const Text('Item Details'),
       ),
       body: const Center(
-        child: Text('More Information Here'),
+        child: SpeechScreen(),
       ),
     );
   }
