@@ -14,7 +14,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
-  var locales;
+  List<LocaleName> locales = [];
 
   @override
   void initState() {
@@ -57,47 +57,71 @@ class _SpeechScreenState extends State<SpeechScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Speech Demo'),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: const Text(
-                'Recognized words:',
-                style: TextStyle(fontSize: 20.0),
-              ),
-            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(16),
-                child: Text(
-                  // If listening is active show the recognized words
-                  _speechToText.isListening
-                      ? _lastWords
-                      // If listening isn't active but could be tell the user
-                      // how to start it, otherwise indicate that speech
-                      // recognition is not yet ready or not supported on
-                      // the target device
-                      : _speechEnabled
-                          ? 'Tap the microphone to start listening...'
-                          : 'Speech not available',
+                child: Center(
+                  child: Text(
+                    // If listening is active, show the recognized words
+                    _speechToText.isListening
+                        ? _lastWords
+                        : _speechEnabled
+                            ? 'Tap the microphone to start listening...'
+                            : 'Speech not available',
+                    textAlign: TextAlign.center, // Center the text horizontally
+                    style: const TextStyle(
+                      fontSize: 24, // Increase the font size
+                      fontWeight: FontWeight.bold, // Make the text bold
+                    ),
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:
-            // If not yet listening for speech start, otherwise stop
-            _speechToText.isNotListening ? _startListening : _stopListening,
-        tooltip: 'Listen',
-        child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        child: Container(
+          height: 60.0,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              // Locale Selector Button
+              IconButton(
+                icon: const Icon(Icons.language),
+                onPressed: () {
+                  // Implement your locale selection logic here
+                },
+              ),
+              // Microphone Button (Centered)
+              FloatingActionButton(
+                onPressed: _speechToText.isNotListening
+                    ? _startListening
+                    : _stopListening,
+                tooltip: 'Listen',
+                child: Icon(
+                    _speechToText.isNotListening ? Icons.mic_off : Icons.mic),
+              ),
+              // Keyboard Button
+              IconButton(
+                icon: const Icon(Icons.keyboard),
+                onPressed: () {
+                  // Implement your typing interface logic here
+                },
+              ),
+            ],
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
