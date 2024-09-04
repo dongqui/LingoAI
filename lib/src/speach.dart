@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'api.dart';
 
 class SpeechScreen extends StatefulWidget {
   const SpeechScreen({super.key});
@@ -14,6 +15,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
+  String _responseText = '';
   List<LocaleName> locales = [];
 
   @override
@@ -68,7 +70,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                   child: Text(
                     // If listening is active, show the recognized words
                     _speechToText.isListening
-                        ? _lastWords
+                        ? '$_lastWords \n $_responseText'
                         : _speechEnabled
                             ? 'Tap the microphone to start listening...'
                             : 'Speech not available',
@@ -113,8 +115,13 @@ class _SpeechScreenState extends State<SpeechScreen> {
               // Keyboard Button
               IconButton(
                 icon: const Icon(Icons.keyboard),
-                onPressed: () {
-                  // Implement your typing interface logic here
+                onPressed: () async {
+                  final response = await sendPostRequest('일단 완성해야지', 'korean');
+                  print(response);
+                  setState(() {
+                    _responseText =
+                        response ?? 'No response from server'; // 서버 응답 저장
+                  });
                 },
               ),
             ],
