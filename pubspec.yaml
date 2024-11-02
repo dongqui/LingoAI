@@ -1,4 +1,4 @@
-name: ai_diary
+name: vivid_diary
 description: "AI drawing diary application"
 
 version: 1.0.0+1
@@ -14,6 +14,7 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   intl: ^0.18.1
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:

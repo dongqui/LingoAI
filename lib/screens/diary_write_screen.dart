@@ -9,62 +9,131 @@ class DiaryWriteScreen extends StatefulWidget {
 
 class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
   final _titleController = TextEditingController();
-  final _contentController = TextEditingController();
-  String? _generatedImageUrl;
+  final _storyController = TextEditingController();
+
+  static const Color _placeholderColor = Color(0xFFEAEAEA);
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _storyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('새 일기 작성'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveDiary,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Color(0xFFA5A5A5),
+            size: 20,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text(
+          'Write',
+          style: TextStyle(
+            color: Color(0xFFA5A5A5),
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Title',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      hintText: '제목을 입력하세요',
+                      hintStyle: TextStyle(color: Color(0xFFEAEAEA)),
+                      border: InputBorder.none,
+                      filled: false,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 0,
+                        vertical: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Story',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  TextField(
+                    controller: _storyController,
+                    maxLines: 10,
+                    decoration: const InputDecoration(
+                      hintText: '오늘의 이야기를 들려주세요',
+                      hintStyle: TextStyle(color: Color(0xFFEAEAEA)),
+                      border: InputBorder.none,
+                      filled: false,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 0,
+                        vertical: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            color: Colors.white,
+            child: SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Submit 로직 구현
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFAF7E),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: '제목',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _contentController,
-              decoration: const InputDecoration(
-                labelText: '내용',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 5,
-            ),
-            const SizedBox(height: 16),
-            if (_generatedImageUrl != null)
-              Image.network(
-                _generatedImageUrl!,
-                height: 200,
-              ),
-            ElevatedButton(
-              onPressed: _generateImage,
-              child: const Text('AI 그림 생성하기'),
-            ),
-          ],
-        ),
-      ),
     );
-  }
-
-  Future<void> _generateImage() async {
-    // OpenAI 이미지 생성 로직 구현
-  }
-
-  void _saveDiary() {
-    // 일기 저장 로직 구현
   }
 }

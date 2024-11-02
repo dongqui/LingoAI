@@ -1,35 +1,36 @@
 class DiaryEntry {
-  final int? id;
+  final String id;
+  final DateTime date;
   final String title;
   final String content;
-  final String? imageUrl;
-  final DateTime date;
+  final String imageUrl;
 
-  DiaryEntry({
-    this.id,
+  const DiaryEntry({
+    required this.id,
+    required this.date,
     required this.title,
     required this.content,
-    this.imageUrl,
-    required this.date,
+    required this.imageUrl,
   });
 
-  Map<String, dynamic> toMap() {
+  // JSON 변환을 위한 메서드들
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'date': date.toIso8601String(),
       'title': title,
       'content': content,
       'imageUrl': imageUrl,
-      'date': date.toIso8601String(),
     };
   }
 
-  factory DiaryEntry.fromMap(Map<String, dynamic> map) {
+  factory DiaryEntry.fromJson(Map<String, dynamic> json) {
     return DiaryEntry(
-      id: map['id'],
-      title: map['title'],
-      content: map['content'],
-      imageUrl: map['imageUrl'],
-      date: DateTime.parse(map['date']),
+      id: json['id'],
+      date: DateTime.parse(json['date']),
+      title: json['title'],
+      content: json['content'],
+      imageUrl: json['imageUrl'],
     );
   }
 }
