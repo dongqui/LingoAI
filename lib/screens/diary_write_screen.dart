@@ -11,8 +11,6 @@ class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
   final _titleController = TextEditingController();
   final _storyController = TextEditingController();
 
-  static const Color _placeholderColor = Color(0xFFEAEAEA);
-
   @override
   void dispose() {
     _titleController.dispose();

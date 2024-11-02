@@ -11,9 +11,9 @@ class DiaryCalendarScreen extends StatefulWidget {
 }
 
 class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
-  final CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  DateTime? _selectedDay = DateTime.now();
 
   // 테스트용 데이터
   final Map<DateTime, String> _diaryImages = {
@@ -61,35 +61,25 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Calendar',
-          style: TextStyle(
-            color: Color(0xFFA5A5A5),
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildCalendar(),
+            Expanded(
+              child: RecentDiaryList(diaries: _diaryEntries),
+            ),
+          ],
         ),
-      ),
-      body: Column(
-        children: [
-          _buildCalendar(),
-          Expanded(
-            child: RecentDiaryList(diaries: _diaryEntries),
-          ),
-        ],
       ),
     );
   }
 
   Widget _buildCalendar() {
+    const textColor = Color(0xFFD6D7DC);
+
     return TableCalendar(
-      firstDay: DateTime.utc(2024, 1, 1),
-      lastDay: DateTime.utc(2024, 12, 31),
+      firstDay: DateTime.utc(2021, 1, 1),
+      lastDay: DateTime.utc(2030, 12, 31),
       focusedDay: _focusedDay,
       calendarFormat: _calendarFormat,
       selectedDayPredicate: (day) {
@@ -101,66 +91,42 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
           _focusedDay = focusedDay;
         });
       },
+      onFormatChanged: (format) {
+        setState(() {
+          _calendarFormat = format;
+        });
+      },
       calendarStyle: const CalendarStyle(
-        outsideDaysVisible: false,
-        defaultTextStyle: TextStyle(
-          color: Colors.black87,
-          fontSize: 14,
-        ),
-        weekendTextStyle: TextStyle(
-          color: Colors.red,
-          fontSize: 14,
-        ),
-        selectedTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 14,
-        ),
+        // 날짜 스타일
+        defaultTextStyle: TextStyle(color: textColor),
+        weekendTextStyle: TextStyle(color: Color(0xFFF74D4D)),
+        outsideTextStyle: TextStyle(color: Color(0x80D6D7DC)), // 투명도 50%
+
+        // 선택된 날짜 스타일
         selectedDecoration: BoxDecoration(
-          color: Color(0xFFFFAF7E),
+          color: Color(0xFF00D085),
           shape: BoxShape.circle,
         ),
-        todayDecoration: BoxDecoration(),
-        todayTextStyle: TextStyle(
-          color: Colors.black87,
-          fontSize: 14,
+        selectedTextStyle: TextStyle(color: Color(0xFF04172C)),
+        todayDecoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.transparent, // 배경색 투명하게
         ),
-      ),
-      daysOfWeekStyle: const DaysOfWeekStyle(
-        weekdayStyle: TextStyle(
-          color: Color(0xFFCBB7A2),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-        weekendStyle: TextStyle(
-          color: Color(0xFFCBB7A2),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      calendarBuilders: CalendarBuilders(
-        defaultBuilder: (context, day, focusedDay) {
-          return _buildCalendarCell(day, false);
-        },
-        selectedBuilder: (context, day, focusedDay) {
-          return _buildCalendarCell(day, true);
-        },
+        todayTextStyle: TextStyle(color: textColor), // 일반 날짜와 동일한 색상
       ),
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,
         titleTextStyle: TextStyle(
-          color: Color(0xFFA5A5A5),
+          color: textColor,
           fontSize: 17,
-          fontWeight: FontWeight.w600,
         ),
-        leftChevronIcon: Icon(
-          Icons.chevron_left,
-          color: Color(0xFFA5A5A5),
-        ),
-        rightChevronIcon: Icon(
-          Icons.chevron_right,
-          color: Color(0xFFA5A5A5),
-        ),
+        leftChevronIcon: Icon(Icons.chevron_left, color: textColor),
+        rightChevronIcon: Icon(Icons.chevron_right, color: textColor),
+      ),
+      daysOfWeekStyle: const DaysOfWeekStyle(
+        weekdayStyle: TextStyle(color: textColor),
+        weekendStyle: TextStyle(color: textColor),
       ),
     );
   }

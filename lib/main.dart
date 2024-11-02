@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/main_layout.dart';
+import 'screens/diary_calendar_screen.dart';
 
 void main() {
   runApp(const DiaryApp());
@@ -11,13 +11,14 @@ class DiaryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI 그림 일기',
+      title: 'Vivid Diary',
       theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFF050B28),
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
           brightness: Brightness.light,
-          background: Colors.white,
+          surface: Colors.white,
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
@@ -42,7 +43,7 @@ class DiaryApp extends StatelessWidget {
           foregroundColor: Colors.blue.shade700,
         ),
       ),
-      home: const MainLayout(),
+      home: const DiaryCalendarScreen(),
     );
   }
 }
