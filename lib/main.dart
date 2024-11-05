@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'screens/diary_calendar_screen.dart';
 
 void main() {
@@ -42,6 +43,7 @@ class DiaryApp extends StatelessWidget {
           backgroundColor: Colors.blue.shade100,
           foregroundColor: Colors.blue.shade700,
         ),
+        fontFamily: GoogleFonts.singleDay().fontFamily,
       ),
       home: const DiaryCalendarScreen(),
     );
