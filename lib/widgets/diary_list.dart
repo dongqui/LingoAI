@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vivid_diary/models/diary_entry.dart';
+import 'package:vivid_diary/screens/diary_write_screen.dart';
 
 class RecentDiaryList extends StatelessWidget {
   final List<DiaryEntry> diaries;
@@ -13,19 +14,31 @@ class RecentDiaryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'This day\'s Memories',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFFFF0E9),
                 ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => DiaryWriteScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.edit),
               ),
             ],
           ),
