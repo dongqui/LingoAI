@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/image_generation_service.dart';
 
-enum GenerationState {
-  loading,
-  confirmation,
-}
-
 class ImageGenerationScreen extends StatefulWidget {
   final String initialPrompt;
 
@@ -19,34 +14,25 @@ class ImageGenerationScreen extends StatefulWidget {
 }
 
 class _ImageGenerationScreenState extends State<ImageGenerationScreen> {
-  late TextEditingController _promptController;
-  GenerationState _state = GenerationState.loading;
-  String? _generatedImage;
+  String? _imageUrl;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _promptController = TextEditingController(text: widget.initialPrompt);
     _generateImage();
   }
 
   Future<void> _generateImage() async {
-    setState(() {
-      _state = GenerationState.loading;
-    });
-
     try {
-      final imageUrls = await generateImage(_promptController.text);
+      final imageUrl = await generateImage(widget.initialPrompt);
       setState(() {
-        _generatedImage = imageUrls[0];
-        _state = GenerationState.confirmation;
+        _imageUrl = imageUrl;
+        _isLoading = false;
       });
     } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이미지 생성에 실패했습니다')),
-      );
-      Navigator.pop(context);
+      setState(() => _isLoading = false);
+      // 에러 처리
     }
   }
 
@@ -54,54 +40,56 @@ class _ImageGenerationScreenState extends State<ImageGenerationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_state == GenerationState.loading ? '이미지 생성 중' : '이미지 확인'),
-        actions: [
-          if (_state == GenerationState.confirmation)
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, {
-                  'prompt': _promptController.text,
-                  'imageUrl': _generatedImage,
-                });
-              },
-              child: const Text('확정'),
-            ),
-        ],
+        title: const Text('Generated Image'),
       ),
-      body: _state == GenerationState.loading
-          ? const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else if (_imageUrl != null)
+              Column(
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('이미지를 생성하고 있습니다...'),
-                ],
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: Image.network(
-                    _generatedImage!,
-                    fit: BoxFit.contain,
+                  Image.network(
+                    _imageUrl!,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const CircularProgressIndicator();
+                    },
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextField(
-                    controller: _promptController,
-                    decoration: InputDecoration(
-                      labelText: '프롬프트 수정',
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: _generateImage,
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.all(16.0),
+                    child: const Text(
+                      'How do you like the image? Any adjustments needed? Feel free to provide your feedback for generating a new image.',
+                      style: TextStyle(
+                        color: Colors.white, // 흰색 텍스트
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.left,
+                      softWrap: true,
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: TextField(
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your feedback here...',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white, // TextField 배경만 흰색
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              )
+            else
+              const Text('이미지 생성에 실패했습니다'),
+          ],
+        ),
+      ),
     );
   }
 }

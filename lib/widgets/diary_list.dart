@@ -52,7 +52,7 @@ class RecentDiaryList extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 height: 120,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF23273B),
+                  color: const Color(0xFF141414),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(

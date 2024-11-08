@@ -12,38 +12,33 @@ class DiaryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Vivid Diary',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF050B28),
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.light,
-          surface: Colors.white,
-        ),
+        scaffoldBackgroundColor: const Color(0xFF1A1A1A),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xFF1A1A1A),
+          foregroundColor: Colors.white,
           elevation: 0,
-          centerTitle: true,
-          iconTheme: IconThemeData(color: Colors.black87),
-          titleTextStyle: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
+        ),
+        cardTheme: const CardTheme(
+          color: Color(0xFF141414),
+          elevation: 0,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF4D4EE8),
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        cardTheme: CardTheme(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: Colors.black12),
-          ),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF00D085),
+          surface: Color(0xFF2A2A2A),
+          background: Color(0xFF1A1A1A),
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.blue.shade100,
-          foregroundColor: Colors.blue.shade700,
-        ),
-        fontFamily: GoogleFonts.singleDay().fontFamily,
       ),
       home: const DiaryCalendarScreen(),
     );

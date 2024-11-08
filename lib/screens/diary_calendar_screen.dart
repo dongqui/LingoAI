@@ -104,7 +104,7 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
 
         // 선택된 날짜 스타일
         selectedDecoration: BoxDecoration(
-          color: Color(0xFF00D085),
+          color: Color(0xFF4D4EE1),
           shape: BoxShape.circle,
         ),
         selectedTextStyle: TextStyle(color: Color(0xFF04172C)),
