@@ -21,132 +21,107 @@ class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Write Diary'),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.close,
-              color: Color(0xFFA5A5A5),
-              size: 20,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          title: const Text(
-            'Write',
-            style: TextStyle(
-              color: Color(0xFFA5A5A5),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          automaticallyImplyLeading: false,
-        ),
-        body: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Title',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    TextField(
-                      controller: _titleController,
-                      decoration: const InputDecoration(
-                        hintText: '제목을 입력하세요',
-                        hintStyle: TextStyle(color: Color(0xFFEAEAEA)),
-                        border: InputBorder.none,
-                        filled: false,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 0,
-                          vertical: 16,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Story',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    TextField(
-                      controller: _storyController,
-                      maxLines: 10,
-                      decoration: const InputDecoration(
-                        hintText: '오늘의 이야기를 들려주세요',
-                        hintStyle: TextStyle(color: Color(0xFFEAEAEA)),
-                        border: InputBorder.none,
-                        filled: false,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 0,
-                          vertical: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            const Text(
+              'Title',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(20),
-              color: Colors.white,
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ImageGenerationScreen(
-                          initialPrompt: _storyController.text,
-                        ),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFAF7E),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                hintText: '제목을 입력하세요',
+                hintStyle: TextStyle(color: Colors.white24),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.all(16),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide.none,
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Story',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+            TextField(
+              controller: _storyController,
+              maxLines: 10,
+              decoration: const InputDecoration(
+                hintText: '오늘의 이야기를 들려주세요',
+                hintStyle: TextStyle(color: Colors.white24),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
               ),
             ),
           ],
         ),
       ),
+      floatingActionButton: Container(
+        width: MediaQuery.of(context).size.width,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        child: FloatingActionButton.extended(
+          elevation: 0,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ImageGenerationScreen(
+                  initialPrompt: _storyController.text,
+                ),
+              ),
+            );
+          },
+          label: const Text(
+            'Submit',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: const Color(0xFF4D4EE8),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
