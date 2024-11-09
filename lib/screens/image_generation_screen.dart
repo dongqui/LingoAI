@@ -1,94 +1,110 @@
 import 'package:flutter/material.dart';
 import '../services/image_generation_service.dart';
+import '../providers/diary_provider.dart';
+import 'package:provider/provider.dart';
 
-class ImageGenerationScreen extends StatefulWidget {
+class ImageGenerationScreen extends StatelessWidget {
   final String initialPrompt;
 
   const ImageGenerationScreen({
-    super.key,
+    Key? key,
     required this.initialPrompt,
-  });
-
-  @override
-  State<ImageGenerationScreen> createState() => _ImageGenerationScreenState();
-}
-
-class _ImageGenerationScreenState extends State<ImageGenerationScreen> {
-  String? _imageUrl;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _generateImage();
-  }
-
-  Future<void> _generateImage() async {
-    try {
-      final imageUrl = await generateImage(widget.initialPrompt);
-      setState(() {
-        _imageUrl = imageUrl;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      // 에러 처리
-    }
-  }
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final diary = Provider.of<DiaryProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Generated Image'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator())
-            else if (_imageUrl != null)
-              Column(
-                children: [
-                  Image.network(
-                    _imageUrl!,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const CircularProgressIndicator();
-                    },
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.all(16.0),
-                    child: const Text(
-                      'How do you like the image? Any adjustments needed? Feel free to provide your feedback for generating a new image.',
-                      style: TextStyle(
-                        color: Colors.white, // 흰색 텍스트
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                if (diary.title.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      diary.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                      textAlign: TextAlign.left,
-                      softWrap: true,
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: TextField(
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your feedback here...',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white, // TextField 배경만 흰색
                       ),
                     ),
                   ),
-                ],
-              )
-            else
-              const Text('이미지 생성에 실패했습니다'),
-          ],
-        ),
+                if (diary.content.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      diary.content,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                if (_isLoading)
+                  const Center(child: CircularProgressIndicator())
+                else if (_imageUrl != null)
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            _imageUrl!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  )
+                else
+                  const Text('이미지 생성에 실패했습니다'),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              color: const Color(0xFF1A1A1A),
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: FloatingActionButton.extended(
+                  elevation: 0,
+                  onPressed: () {
+                    // Select Image 로직
+                  },
+                  label: const Text(
+                    'Select Image',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  backgroundColor: const Color(0xFF4D4EE8),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
