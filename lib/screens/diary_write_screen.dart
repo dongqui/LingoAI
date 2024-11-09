@@ -1,26 +1,16 @@
 import 'package:flutter/material.dart';
 import 'image_generation_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/diary_provider.dart';
 
-class DiaryWriteScreen extends StatefulWidget {
-  const DiaryWriteScreen({super.key});
-
-  @override
-  State<DiaryWriteScreen> createState() => _DiaryWriteScreenState();
-}
-
-class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
-  final _titleController = TextEditingController();
-  final _storyController = TextEditingController();
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _storyController.dispose();
-    super.dispose();
-  }
+class DiaryWriteScreen extends StatelessWidget {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _storyController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final diaryProvider = Provider.of<DiaryProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Write Diary'),
@@ -29,16 +19,24 @@ class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Title',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Text(
+                'Title',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  letterSpacing: 1.0,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
+            const SizedBox(height: 4),
             TextField(
               controller: _titleController,
+              onChanged: (value) => diaryProvider.setTitle(value),
+              cursorColor: const Color(0xFF4D4EE8),
               decoration: const InputDecoration(
                 hintText: '제목을 입력하세요',
                 hintStyle: TextStyle(color: Colors.white24),
@@ -59,16 +57,23 @@ class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Story',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
+            const Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Text(
+                'Story',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  letterSpacing: 1.0,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
+            const SizedBox(height: 4),
             TextField(
               controller: _storyController,
+              onChanged: (value) => diaryProvider.setContent(value),
+              cursorColor: const Color(0xFF4D4EE8),
               maxLines: 10,
               decoration: const InputDecoration(
                 hintText: '오늘의 이야기를 들려주세요',
