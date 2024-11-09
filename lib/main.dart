@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/diary_calendar_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers/diary_provider.dart';
 
 void main() {
-  runApp(const DiaryApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DiaryProvider()),
+      ],
+      child: const DiaryApp(),
+    ),
+  );
 }
 
 class DiaryApp extends StatelessWidget {
