@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import '../services/image_generation_service.dart';
 import '../providers/diary_provider.dart';
 import 'package:provider/provider.dart';
 
 class ImageGenerationScreen extends StatelessWidget {
-  final String initialPrompt;
-
   const ImageGenerationScreen({
     Key? key,
-    required this.initialPrompt,
   }) : super(key: key);
 
   @override
@@ -48,32 +44,22 @@ class ImageGenerationScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (_isLoading)
-                  const Center(child: CircularProgressIndicator())
-                else if (_imageUrl != null)
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            _imageUrl!,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            },
-                          ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          'YOUR_IMAGE_URL_HERE',
+                          width: double.infinity,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      const SizedBox(height: 100),
-                    ],
-                  )
-                else
-                  const Text('이미지 생성에 실패했습니다'),
+                    ),
+                    const SizedBox(height: 100),
+                  ],
+                ),
               ],
             ),
           ),
