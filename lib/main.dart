@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'screens/diary_calendar_screen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/diary_provider.dart';
 
 void main() {
@@ -46,7 +45,6 @@ class DiaryApp extends StatelessWidget {
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFF00D085),
           surface: Color(0xFF2A2A2A),
-          background: Color(0xFF1A1A1A),
         ),
       ),
       home: const DiaryCalendarScreen(),

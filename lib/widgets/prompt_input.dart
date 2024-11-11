@@ -19,9 +19,9 @@ class PromptInput extends StatelessWidget {
               color: const Color(0xFF141414),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: TextField(
+            child: const TextField(
               maxLines: 3,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.fromLTRB(16, 16, 56, 16),
                 labelText: 'Enter prompt',
@@ -38,11 +38,11 @@ class PromptInput extends StatelessWidget {
                 ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
               ),
-              cursorColor: const Color(0xFF4D4EE8),
+              cursorColor: Color(0xFF4D4EE8),
             ),
           ),
           Positioned(
@@ -63,4 +63,4 @@ class PromptInput extends StatelessWidget {
       ),
     );
   }
-} 
+}
