@@ -18,8 +18,10 @@ class DiaryWriteScreen extends StatelessWidget {
         Scaffold(
           appBar: AppBar(
             title: const Text('Write Diary'),
+            centerTitle: true,
           ),
           body: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 80),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -110,19 +112,22 @@ class DiaryWriteScreen extends StatelessWidget {
             child: FloatingActionButton.extended(
               elevation: 0,
               onPressed: () async {
+                FocusScope.of(context).unfocus();
                 final diaryProvider =
                     Provider.of<DiaryProvider>(context, listen: false);
                 await diaryProvider.generateImage();
 
-                if (context.mounted) {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const ImageGenerationScreen(),
-                    ),
-                  );
-                }
+                if (!context.mounted) return;
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ImageGenerationScreen(),
+                  ),
+                );
               },
-              label: const Text('Submit'),
+              label: const Text(
+                'Generate a image',
+                style: TextStyle(color: Colors.white),
+              ),
               backgroundColor: const Color(0xFF4D4EE8),
             ),
           ),
@@ -131,9 +136,11 @@ class DiaryWriteScreen extends StatelessWidget {
         ),
         if (diaryProvider.isLoading)
           Container(
-            color: Colors.white,
+            color: const Color(0xFF1A1A1A),
             child: const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Color(0xFF4D4EE8),
+              ),
             ),
           ),
       ],
