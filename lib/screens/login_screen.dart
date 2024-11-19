@@ -51,7 +51,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'AI Diary',
+                'Vivid Diary',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 32,
