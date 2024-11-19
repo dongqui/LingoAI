@@ -59,7 +59,7 @@ class ImageGenerationScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      diary.title ?? 'No title',
+                      diary.title,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -71,7 +71,7 @@ class ImageGenerationScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      diary.content ?? '내용 없음',
+                      diary.content,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
