@@ -2,24 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/diary_calendar_screen.dart';
 import 'providers/diary_provider.dart';
+import 'router/router.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DiaryProvider()),
-      ],
-      child: const DiaryApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
-class DiaryApp extends StatelessWidget {
-  const DiaryApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: router,
       title: 'Flutter Demo',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF1A1A1A),
@@ -47,7 +40,6 @@ class DiaryApp extends StatelessWidget {
           surface: Color(0xFF2A2A2A),
         ),
       ),
-      home: const DiaryCalendarScreen(),
     );
   }
 }
