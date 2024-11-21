@@ -2,24 +2,32 @@ import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/social_login_button.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId: 'GOOGLE_WEB_CLIENT_ID', // 웹 애플리케이션 클라이언트 ID
+  );
+
+  LoginScreen({super.key});
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
-      await Supabase.instance.client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'io.supabase.flutter://login-callback/',
+      print(_googleSignIn);
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
+
+      // Google 로그인 후 받은 토큰으로 Supabase 인증
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      await Supabase.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: googleAuth.idToken!,
       );
     } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('로그인 실패: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // 에러 처리
+      print('$e@@@@@@@@@@@@@@@@@');
     }
   }
 
@@ -27,7 +35,10 @@ class LoginScreen extends StatelessWidget {
     try {
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.apple,
-        redirectTo: 'io.supabase.flutter://login-callback/',
+        redirectTo: dotenv.env['APPLE_AUTH_CALLBACK_URL']!,
+        queryParams: {
+          'client_id': dotenv.env['APPLE_CLIENT_ID']!,
+        },
       );
     } catch (e) {
       if (!context.mounted) return;
