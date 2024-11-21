@@ -6,29 +6,39 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatelessWidget {
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId: 'GOOGLE_WEB_CLIENT_ID', // 웹 애플리케이션 클라이언트 ID
-  );
+  final GoogleSignIn? _googleSignIn = Platform.isAndroid
+      ? GoogleSignIn(
+          clientId: dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
+          serverClientId: dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
+        )
+      : null;
 
-  LoginScreen({super.key});
+  LoginScreen({super.key}) {
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.signedIn) {}
+    });
+  }
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
-      print(_googleSignIn);
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn!.signIn();
+
       if (googleUser == null) return;
 
       // Google 로그인 후 받은 토큰으로 Supabase 인증
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
       await Supabase.instance.client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: googleAuth.idToken!,
       );
-    } catch (e) {
-      // 에러 처리
-      print('$e@@@@@@@@@@@@@@@@@');
-    }
+    } catch (e) {}
   }
 
   Future<void> _handleAppleSignIn(BuildContext context) async {
