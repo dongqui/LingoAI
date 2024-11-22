@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'router/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'providers/diary_provider.dart';
+import './services/auth_state_handler.dart';
+import './services/route_service.dart';
+import './services/permission_service.dart';
+import './database/database_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // .env 파일 로드
   await dotenv.load();
 
   await Supabase.initialize(
@@ -14,11 +19,46 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const MyApp());
+  await PermissionService.checkAndRequestStoragePermission();
+  final initialRoute = await RouteService.determineInitialRoute();
+
+  final dbHelper = DatabaseHelper.instance;
+  await dbHelper.database;
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DiaryProvider()),
+        // 다른 provider들...
+      ],
+      child: MyApp(initialRoute: initialRoute),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final String initialRoute;
+
+  const MyApp({super.key, required this.initialRoute});
+
+  @override
+  State<MyApp> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AuthStateHandler.initAuthStateListener(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    AuthStateHandler.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
