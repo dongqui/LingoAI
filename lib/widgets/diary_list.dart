@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:vivid_diary/models/diary_entry.dart';
-import 'package:vivid_diary/screens/diary_write_screen.dart';
+import 'package:vivid_diary/models/diary.dart';
+import 'package:go_router/go_router.dart';
 
 class RecentDiaryList extends StatelessWidget {
-  final List<DiaryEntry> diaries;
+  final List<Diary> diaries;
 
   const RecentDiaryList({
     super.key,
@@ -30,13 +30,7 @@ class RecentDiaryList extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (context) => DiaryWriteScreen(),
-                    ),
-                  );
+                  context.push('/write');
                 },
                 icon: const Icon(Icons.edit),
               ),
