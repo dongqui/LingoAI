@@ -5,12 +5,14 @@ class DiaryProvider with ChangeNotifier {
   String _title = '';
   String _content = '';
   String _imageUrl = '';
+  String _userId = '';
   bool _isLoading = false;
   final ImageGenerationService _imageService = ImageGenerationService();
 
   String get title => _title;
   String get content => _content;
   String get imageUrl => _imageUrl;
+  String get userId => _userId;
   bool get isLoading => _isLoading;
 
   void setTitle(String title) {
@@ -23,17 +25,31 @@ class DiaryProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setUserId(String userId) {
+    _userId = userId;
+    notifyListeners();
+  }
+
   Future<void> generateImage() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _imageUrl = await _imageService.generateImage(_content);
+      _imageUrl = await _imageService.generateImage(
+        content: _content,
+        title: _title,
+        userId: _userId,
+      );
     } catch (e) {
-      // 에러 처리
+      debugPrint('이미지 생성 오류: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void updateImagePath(String path) {
+    _imageUrl = path;
+    notifyListeners();
   }
 }

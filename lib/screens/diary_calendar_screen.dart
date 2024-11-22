@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:vivid_diary/models/diary_entry.dart';
+import 'package:vivid_diary/models/diary.dart';
 import 'package:vivid_diary/widgets/diary_list.dart';
 
 class DiaryCalendarScreen extends StatefulWidget {
@@ -22,36 +22,7 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
     DateTime.utc(2024, 3, 25): 'https://picsum.photos/102',
   };
 
-  final List<DiaryEntry> _diaryEntries = [
-    DiaryEntry(
-      id: '1',
-      date: DateTime.now().subtract(const Duration(days: 1)),
-      title: '즐거운 주말',
-      content: '오늘은 친구들과 카페에서 만났다...',
-      imageUrl: 'https://picsum.photos/200',
-    ),
-    DiaryEntry(
-      id: '2',
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      title: '비오는 날',
-      content: '창밖에 빗소리를 들으며 책을 읽었다...',
-      imageUrl: 'https://picsum.photos/201',
-    ),
-    DiaryEntry(
-      id: '3',
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      title: '비오는 날',
-      content: '창밖에 빗소리를 들으며 책을 읽었다...',
-      imageUrl: 'https://picsum.photos/201',
-    ),
-    DiaryEntry(
-      id: '4',
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      title: '비오는 날',
-      content: '창밖에 빗소리를 들으며 책을 읽었다...',
-      imageUrl: 'https://picsum.photos/201',
-    ),
-  ];
+  final List<Diary> _diaries = [];
 
   bool isSameDate(DateTime? a, DateTime? b) {
     if (a == null || b == null) return false;
@@ -66,7 +37,7 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
           children: [
             _buildCalendar(),
             Expanded(
-              child: RecentDiaryList(diaries: _diaryEntries),
+              child: RecentDiaryList(diaries: _diaries),
             ),
           ],
         ),
@@ -127,6 +98,11 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
       daysOfWeekStyle: const DaysOfWeekStyle(
         weekdayStyle: TextStyle(color: textColor),
         weekendStyle: TextStyle(color: textColor),
+      ),
+      calendarBuilders: CalendarBuilders(
+        defaultBuilder: (context, day, focusedDay) {
+          return _buildCalendarCell(day, isSameDay(_selectedDay, day));
+        },
       ),
     );
   }
