@@ -4,8 +4,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/social_login_button.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final GoogleSignIn? _googleSignIn = Platform.isAndroid
       ? GoogleSignIn(
           clientId: dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
@@ -13,32 +21,35 @@ class LoginScreen extends StatelessWidget {
         )
       : null;
 
-  LoginScreen({super.key}) {
-    _setupAuthListener();
-  }
-
-  void _setupAuthListener() {
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
-      if (event == AuthChangeEvent.signedIn) {}
-    });
-  }
-
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn!.signIn();
+      if (_googleSignIn == null) return;
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) return;
 
-      // Google 로그인 후 받은 토큰으로 Supabase 인증
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      await Supabase.instance.client.auth.signInWithIdToken(
+      final response = await Supabase.instance.client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: googleAuth.idToken!,
       );
-    } catch (e) {}
+
+      if (!mounted) return;
+      final session = response.session;
+      if (session != null) {
+        context.go('/home');
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('로그인 실패: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _handleAppleSignIn(BuildContext context) async {

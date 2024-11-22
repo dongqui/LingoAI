@@ -1,9 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ImageGenerationService {
-  Future<String> generateImage(String prompt) async {
-    const apiUrl = 'http://10.0.2.2:54321/functions/v1/generate-image';
+  Future<String> generateImage({
+    required String content,
+    required String title,
+    required String userId,
+  }) async {
+    // const apiUrl = dotenv.env['LOCAL_IMAGE_GENERATION_API_URL'];
+    var apiUrl = dotenv.env['PRODUCTION_IMAGE_GENERATION_API_URL'];
+
+    if (apiUrl == null) {
+      throw Exception('API URL이 설정되지 않았습니다.');
+    }
 
     try {
       final response = await http.post(
@@ -12,7 +22,9 @@ class ImageGenerationService {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'content': prompt,
+          'content': content,
+          'title': title,
+          'userId': userId,
         }),
       );
 

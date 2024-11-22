@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../providers/diary_provider.dart';
 import 'package:provider/provider.dart';
+import '../services/gallery_service.dart';
+import 'package:go_router/go_router.dart';
+import '../services/diary_service.dart';
 
 class ImageGenerationScreen extends StatelessWidget {
   const ImageGenerationScreen({
@@ -86,8 +89,33 @@ class ImageGenerationScreen extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: FloatingActionButton.extended(
                         elevation: 0,
-                        onPressed: () {
-                          // Select Image 로직
+                        onPressed: () async {
+                          try {
+                            final imagePath =
+                                await GalleryService.saveUrlToFile(
+                                    diary.imageUrl, diary.title);
+
+                            await DiaryService.createDiary(
+                              title: diary.title,
+                              content: diary.content,
+                              imageUrl: diary.imageUrl,
+                              userId: diary.userId,
+                              imageLocalPath: imagePath,
+                            );
+
+                            if (context.mounted) {
+                              context.go('/');
+                            }
+                          } catch (e) {
+                            debugPrint(e.toString());
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('이미지 저장 중 오류가 발생했습니다!!!: $e')),
+                              );
+                            }
+                          }
                         },
                         label: const Text(
                           'Confirm',
