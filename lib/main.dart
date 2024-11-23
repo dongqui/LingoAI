@@ -3,11 +3,12 @@ import 'router/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'providers/diary_provider.dart';
+import 'providers/diary_input_provider.dart';
 import './services/auth_state_handler.dart';
 import './services/route_service.dart';
 import './services/permission_service.dart';
 import './database/database_helper.dart';
+import 'providers/diary_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +26,11 @@ void main() async {
   final dbHelper = DatabaseHelper.instance;
   await dbHelper.database;
 
+  await DatabaseHelper.instance.deleteDatabase();
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => DiaryInputProvider()),
         ChangeNotifierProvider(create: (_) => DiaryProvider()),
         // 다른 provider들...
       ],

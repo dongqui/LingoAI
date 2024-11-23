@@ -34,6 +34,7 @@ class DatabaseHelper {
         imageUrl TEXT NOT NULL,
         imageLocalPath TEXT NOT NULL,
         userId TEXT NOT NULL,
+        date TEXT NOT NULL,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL
       )
@@ -48,6 +49,27 @@ class DatabaseHelper {
   Future<List<Diary>> getAllDiaries() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('diaries');
+    return List.generate(maps.length, (i) => Diary.fromMap(maps[i]));
+  }
+
+  Future<void> deleteDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'diary.db');
+    await databaseFactory.deleteDatabase(path);
+    _database = null;  // 데이터베이스 인스턴스 초기화
+  }
+
+  Future<List<Diary>> getDiariesForDate(DateTime date) async {
+    final db = await database;
+    final startDate = DateTime(date.year, date.month, date.day).toIso8601String();
+    final endDate = DateTime(date.year, date.month, date.day, 23, 59, 59).toIso8601String();
+    
+    final List<Map<String, dynamic>> maps = await db.query(
+      'diaries',
+      where: 'date BETWEEN ? AND ?',
+      whereArgs: [startDate, endDate],
+    );
+    
     return List.generate(maps.length, (i) => Diary.fromMap(maps[i]));
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../providers/diary_provider.dart';
+import '../providers/diary_input_provider.dart';
 import 'package:provider/provider.dart';
 import '../services/gallery_service.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +12,7 @@ class ImageGenerationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final diary = Provider.of<DiaryProvider>(context);
+    final diary = Provider.of<DiaryInputProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -101,6 +101,7 @@ class ImageGenerationScreen extends StatelessWidget {
                               imageUrl: diary.imageUrl,
                               userId: diary.userId,
                               imageLocalPath: imagePath,
+                              date: diary.date,
                             );
 
                             if (context.mounted) {

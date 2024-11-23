@@ -1,55 +1,29 @@
 import 'package:flutter/foundation.dart';
-import '../services/image_generation_service.dart';
+import '../models/diary.dart';
+import '../database/database_helper.dart';
 
 class DiaryProvider with ChangeNotifier {
-  String _title = '';
-  String _content = '';
-  String _imageUrl = '';
-  String _userId = '';
-  bool _isLoading = false;
-  final ImageGenerationService _imageService = ImageGenerationService();
+  List<Diary> _diaries = [];
+  List<Diary> get diaries => _diaries;
+  DateTime _selectedDate = DateTime.now();
+  DateTime _focusedDate = DateTime.now();
 
-  String get title => _title;
-  String get content => _content;
-  String get imageUrl => _imageUrl;
-  String get userId => _userId;
-  bool get isLoading => _isLoading;
+  DateTime get selectedDate => _selectedDate;
+  DateTime get focusedDate => _focusedDate;
 
-  void setTitle(String title) {
-    _title = title;
+  Future<void> setSelectedDate(DateTime date) async {
+    _selectedDate = date;
+    _focusedDate = date;
+
+    _diaries = await DatabaseHelper.instance.getDiariesForDate(date);
     notifyListeners();
   }
 
-  void setContent(String content) {
-    _content = content;
-    notifyListeners();
+  Future<List<Diary>> getDiariesForDate(DateTime date) async {
+    return await DatabaseHelper.instance.getDiariesForDate(date);
   }
 
-  void setUserId(String userId) {
-    _userId = userId;
-    notifyListeners();
-  }
-
-  Future<void> generateImage() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      _imageUrl = await _imageService.generateImage(
-        content: _content,
-        title: _title,
-        userId: _userId,
-      );
-    } catch (e) {
-      debugPrint('이미지 생성 오류: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  void updateImagePath(String path) {
-    _imageUrl = path;
-    notifyListeners();
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }

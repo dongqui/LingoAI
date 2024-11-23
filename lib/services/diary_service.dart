@@ -4,7 +4,7 @@ import '../database/database_helper.dart';
 
 class DiaryService {
   static Future<Diary> createDiary(
-      {title, content, imageUrl, userId, imageLocalPath}) async {
+      {title, content, imageUrl, userId, imageLocalPath, date}) async {
     // Supabase에 저장
     final supabase = Supabase.instance.client;
 
@@ -15,6 +15,7 @@ class DiaryService {
           'content': content,
           'imageUrl': imageUrl,
           'userId': userId,
+          'date': date,
         })
         .select()
         .single();
@@ -29,6 +30,7 @@ class DiaryService {
       createdAt: response['createdAt'],
       updatedAt: response['updatedAt'],
       imageLocalPath: imageLocalPath,
+      date: response['date'],
     );
 
     await DatabaseHelper.instance.insertDiary(updatedDiary);

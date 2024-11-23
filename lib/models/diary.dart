@@ -7,6 +7,7 @@ class Diary {
   final String userId;
   final String imageLocalPath;
   final String updatedAt;
+  final String date;
 
   const Diary({
     required this.id,
@@ -17,6 +18,7 @@ class Diary {
     required this.userId,
     required this.imageLocalPath,
     required this.updatedAt,
+    required this.date,
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class Diary {
       'userId': userId,
       'imageLocalPath': imageLocalPath,
       'updatedAt': updatedAt,
+      'date': date,
     };
   }
 
@@ -42,6 +45,7 @@ class Diary {
       userId: map['userId'],
       imageLocalPath: map['imageLocalPath'],
       updatedAt: map['updatedAt'],
+      date: map['date'],
     );
   }
 }

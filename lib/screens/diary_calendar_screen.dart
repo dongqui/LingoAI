@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:vivid_diary/models/diary.dart';
 import 'package:vivid_diary/widgets/diary_list.dart';
+import 'package:vivid_diary/providers/diary_provider.dart';
+import 'package:provider/provider.dart';
 
 class DiaryCalendarScreen extends StatefulWidget {
   const DiaryCalendarScreen({super.key});
@@ -12,8 +13,10 @@ class DiaryCalendarScreen extends StatefulWidget {
 
 class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay = DateTime.now();
+
+  // Provider getter 추가
+  DiaryProvider get _diaryProvider =>
+      Provider.of<DiaryProvider>(context, listen: false);
 
   // 테스트용 데이터
   final Map<DateTime, String> _diaryImages = {
@@ -22,7 +25,11 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
     DateTime.utc(2024, 3, 25): 'https://picsum.photos/102',
   };
 
-  final List<Diary> _diaries = [];
+  @override
+  void initState() {
+    super.initState();
+    _diaryProvider.getDiariesForDate(_diaryProvider.selectedDate);
+  }
 
   bool isSameDate(DateTime? a, DateTime? b) {
     if (a == null || b == null) return false;
@@ -37,7 +44,7 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
           children: [
             _buildCalendar(),
             Expanded(
-              child: RecentDiaryList(diaries: _diaries),
+              child: RecentDiaryList(diaries: _diaryProvider.diaries),
             ),
           ],
         ),
@@ -51,15 +58,14 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
     return TableCalendar(
       firstDay: DateTime.utc(2021, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: _focusedDay,
+      focusedDay: _diaryProvider.focusedDate,
       calendarFormat: _calendarFormat,
       selectedDayPredicate: (day) {
-        return isSameDay(_selectedDay, day);
+        return isSameDay(_diaryProvider.selectedDate, day);
       },
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
-          _selectedDay = selectedDay;
-          _focusedDay = focusedDay;
+          _diaryProvider.setSelectedDate(selectedDay);
         });
       },
       onFormatChanged: (format) {
@@ -101,7 +107,8 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
       ),
       calendarBuilders: CalendarBuilders(
         defaultBuilder: (context, day, focusedDay) {
-          return _buildCalendarCell(day, isSameDay(_selectedDay, day));
+          return _buildCalendarCell(
+              day, isSameDay(_diaryProvider.selectedDate, day));
         },
       ),
     );
@@ -118,39 +125,24 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
                 ? Border.all(color: const Color(0xFFFFAF7E), width: 2)
                 : null,
           ),
-          child: ClipOval(
-            child: Stack(
-              children: [
-                Image.network(
-                  _diaryImages[date]!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Text(
+                '${day.day}',
+                style: const TextStyle(
+                  color: Color(0xFFD6D7DC),
                 ),
-                Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black54,
-                      ],
-                    ),
-                  ),
+              ),
+              const Positioned(
+                bottom: 2,
+                child: Icon(
+                  Icons.star,
+                  size: 8,
+                  color: Color(0xFFFFAF7E),
                 ),
-                Center(
-                  child: Text(
-                    '${day.day}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/diary_provider.dart';
+import '../providers/diary_input_provider.dart';
 import '../screens/image_generation_screen.dart';
 
 class DiaryWriteScreen extends StatelessWidget {
@@ -11,7 +11,7 @@ class DiaryWriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final diaryProvider = Provider.of<DiaryProvider>(context);
+    final diaryProvider = Provider.of<DiaryInputProvider>(context);
 
     return Stack(
       children: [
@@ -114,7 +114,7 @@ class DiaryWriteScreen extends StatelessWidget {
               onPressed: () async {
                 FocusScope.of(context).unfocus();
                 final diaryProvider =
-                    Provider.of<DiaryProvider>(context, listen: false);
+                    Provider.of<DiaryInputProvider>(context, listen: false);
                 await diaryProvider.generateImage();
 
                 if (!context.mounted) return;
