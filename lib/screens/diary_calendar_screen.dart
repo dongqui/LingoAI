@@ -88,17 +88,12 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
         weekendStyle: TextStyle(color: textColor),
       ),
       calendarBuilders: CalendarBuilders(
-        defaultBuilder: (context, day, focusedDay) {
-          return _buildCalendarCell(diaryProvider.diaryDates, day,
-              isSameDay(diaryProvider.selectedDate, day), false);
-        },
         markerBuilder: (context, day, events) {
-          if (day.weekday == DateTime.saturday ||
-              day.weekday == DateTime.sunday) {
-            return _buildCalendarCell(diaryProvider.diaryDates, day,
-                isSameDay(diaryProvider.selectedDate, day), true);
-          }
-          return null;
+          final isWeekend = day.weekday == DateTime.saturday ||
+              day.weekday == DateTime.sunday;
+
+          return _buildCalendarCell(diaryProvider.diaryDates, day,
+              isSameDay(diaryProvider.selectedDate, day), isWeekend);
         },
       ),
     );
@@ -106,9 +101,9 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
 
   Widget? _buildCalendarCell(
       List<int> diaryDates, DateTime date, bool isSelected, bool isWeekend) {
-    if (diaryDates.contains(date.day)) {
+    if (diaryDates.contains(date.day) && !isSelected) {
       return Container(
-        margin: const EdgeInsets.all(4),
+        margin: const EdgeInsets.all(6),
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Color(0xFFFFAF7E),
@@ -121,11 +116,14 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
         ),
       );
     }
+
     return Center(
       child: Text(
         '${date.day}',
         style: TextStyle(
-          color: isWeekend ? const Color(0xFFF74D4D) : const Color(0xFFD6D7DC),
+          color: (isWeekend && !isSelected)
+              ? const Color(0xFFF74D4D)
+              : const Color(0xFFD6D7DC),
         ),
       ),
     );
