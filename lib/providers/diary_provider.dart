@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../models/diary.dart';
 import '../database/database_helper.dart';
+import '../services/diary_service.dart';
+import '../services/gallery_service.dart';
 
 class DiaryProvider with ChangeNotifier {
   List<int> diaryDates = [];
@@ -8,6 +10,8 @@ class DiaryProvider with ChangeNotifier {
   List<Diary> get diaries => _diaries;
   DateTime _selectedDate = DateTime.now();
   DateTime _focusedDate = DateTime.now();
+  bool _isAddingDiary = false;
+  bool get isAddingDiary => _isAddingDiary;
 
   DateTime get selectedDate => _selectedDate;
   DateTime get focusedDate => _focusedDate;
@@ -17,6 +21,8 @@ class DiaryProvider with ChangeNotifier {
 
   Future<void> _init() async {
     _diaries = await DatabaseHelper.instance.getDiariesForDate(_selectedDate);
+    diaryDates = await getDiaryDates(_focusedDate);
+
     notifyListeners();
   }
 
@@ -40,15 +46,53 @@ class DiaryProvider with ChangeNotifier {
   Future<void> setFocusedDate(DateTime date) async {
     _focusedDate = date;
     // 해당 월의 첫날과 마지막 날 계산
+    diaryDates = await getDiaryDates(date);
+
+    notifyListeners();
+  }
+
+  Future<List<int>> getDiaryDates(DateTime date) async {
     final firstDay = DateTime(date.year, date.month, 1);
     final lastDay = DateTime(date.year, date.month + 1, 0);
 
     // 해당 월의 일기들 가져오기
     final diaries =
         await DatabaseHelper.instance.getDiariesForMonth(firstDay, lastDay);
-    diaryDates =
-        diaries.map((diary) => DateTime.parse(diary.date).day).toSet().toList();
 
+    return diaries
+        .map((diary) => DateTime.parse(diary.date).day)
+        .toSet()
+        .toList();
+  }
+
+  Future<void> addDiary({
+    required String title,
+    required String content,
+    required String imageUrl,
+    required String userId,
+    required String date,
+  }) async {
+    _isAddingDiary = true;
     notifyListeners();
+
+    try {
+      final imageLocalPath =
+          await GalleryService.saveUrlToFile(imageUrl, title);
+
+      await DiaryService.createDiary(
+        title: title,
+        content: content,
+        imageUrl: imageUrl,
+        userId: userId,
+        imageLocalPath: imageLocalPath,
+        date: date,
+      );
+
+      _diaries = await DatabaseHelper.instance.getDiariesForDate(_selectedDate);
+      diaryDates = await getDiaryDates(_focusedDate);
+    } finally {
+      _isAddingDiary = false;
+      notifyListeners();
+    }
   }
 }

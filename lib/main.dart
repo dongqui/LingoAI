@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'router/router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'providers/diary_input_provider.dart';
-import './services/auth_state_handler.dart';
-import './services/route_service.dart';
+// import './services/auth_state_handler.dart';
 import './services/permission_service.dart';
 import './database/database_helper.dart';
 import 'providers/diary_provider.dart';
+
+// import './services/route_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-  );
+  // await Supabase.initialize(
+  //   url: dotenv.env['SUPABASE_URL']!,
+  //   anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  // );
   await PermissionService.checkAndRequestStoragePermission();
 
-  final initialRoute = await RouteService.determineInitialRoute();
+  // final initialRoute = await RouteService.determineInitialRoute();
 
   final dbHelper = DatabaseHelper.instance;
   await dbHelper.database;
@@ -31,7 +32,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => DiaryInputProvider()),
         ChangeNotifierProvider(create: (_) => DiaryProvider()),
       ],
-      child: MyApp(initialRoute: initialRoute),
+      child: const MyApp(initialRoute: '/home'),
     ),
   );
 }
@@ -50,14 +51,14 @@ class MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      AuthStateHandler.initAuthStateListener(context);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   AuthStateHandler.initAuthStateListener(context);
+    // });
   }
 
   @override
   void dispose() {
-    AuthStateHandler.dispose();
+    // AuthStateHandler.dispose();
     super.dispose();
   }
 

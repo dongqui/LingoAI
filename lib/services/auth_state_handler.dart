@@ -1,26 +1,26 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:provider/provider.dart';
-import '../providers/diary_input_provider.dart';
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:provider/provider.dart';
+// import '../providers/diary_input_provider.dart';
 
-class AuthStateHandler {
-  static final SupabaseClient _supabase = Supabase.instance.client;
-  static StreamSubscription<AuthState>? _authStateSubscription;
+// class AuthStateHandler {
+//   static final SupabaseClient _supabase = Supabase.instance.client;
+//   static StreamSubscription<AuthState>? _authStateSubscription;
 
-  static void initAuthStateListener(BuildContext context) {
-    _authStateSubscription = _supabase.auth.onAuthStateChange.listen((data) {
-      final AuthState authState = data;
-      final Session? session = authState.session;
+//   static void initAuthStateListener(BuildContext context) {
+//     _authStateSubscription = _supabase.auth.onAuthStateChange.listen((data) {
+//       final AuthState authState = data;
+//       final Session? session = authState.session;
 
-      if (!context.mounted) return;
+//       if (!context.mounted) return;
 
-      final String userId = session?.user.id ?? '';
-      Provider.of<DiaryInputProvider>(context, listen: false).setUserId(userId);
-    });
-  }
+//       final String userId = session?.user.id ?? '';
+//       Provider.of<DiaryInputProvider>(context, listen: false).setUserId(userId);
+//     });
+//   }
 
-  static void dispose() {
-    _authStateSubscription?.cancel();
-  }
-}
+//   static void dispose() {
+//     _authStateSubscription?.cancel();
+//   }
+// }
