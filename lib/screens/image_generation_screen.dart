@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../providers/diary_input_provider.dart';
 import 'package:provider/provider.dart';
-import '../services/gallery_service.dart';
 import 'package:go_router/go_router.dart';
-import '../services/diary_service.dart';
+import '../providers/diary_provider.dart';
 
 class ImageGenerationScreen extends StatelessWidget {
   const ImageGenerationScreen({
@@ -97,41 +96,53 @@ class ImageGenerationScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 child: FloatingActionButton.extended(
                   elevation: 0,
-                  onPressed: () async {
-                    try {
-                      final imagePath = await GalleryService.saveUrlToFile(
-                          diary.imageUrl, diary.title);
+                  backgroundColor: context.watch<DiaryProvider>().isAddingDiary
+                      ? const Color(0xFF4D4EE8).withOpacity(0.5)
+                      : const Color(0xFF4D4EE8),
+                  onPressed: context.watch<DiaryProvider>().isAddingDiary
+                      ? null
+                      : () async {
+                          try {
+                            final diaryProvider = context.read<DiaryProvider>();
+                            await diaryProvider.addDiary(
+                              title: diary.title,
+                              content: diary.content,
+                              imageUrl: diary.imageUrl,
+                              userId: diary.userId,
+                              date: diary.date,
+                            );
 
-                      await DiaryService.createDiary(
-                        title: diary.title,
-                        content: diary.content,
-                        imageUrl: diary.imageUrl,
-                        userId: diary.userId,
-                        imageLocalPath: imagePath,
-                        date: diary.date,
-                      );
-
-                      if (context.mounted) {
-                        context.go('/home');
-                      }
-                    } catch (e) {
-                      debugPrint(e.toString());
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('이미지 저장 중 오류가 발생했습니다!!!: $e')),
-                        );
-                      }
-                    }
-                  },
-                  label: const Text(
-                    'Confirm',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  backgroundColor: const Color(0xFF4D4EE8),
+                            if (context.mounted) {
+                              context.go('/home');
+                            }
+                          } catch (e) {
+                            debugPrint(e.toString());
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('이미지 저장 중 오류가 발생했습니다!!!: $e')),
+                              );
+                            }
+                          }
+                        },
+                  label: context.watch<DiaryProvider>().isAddingDiary
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ),
