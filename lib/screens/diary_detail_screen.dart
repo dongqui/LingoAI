@@ -26,17 +26,15 @@ class DiaryDetailScreen extends StatelessWidget {
             icon: const Icon(Icons.share),
             onPressed: () async {
               try {
-                // 이미지 다운로드
-                final response = await http.get(Uri.parse(diary.imageUrl));
-                final tempDir = await getTemporaryDirectory();
-                final tempFile = File('${tempDir.path}/shared_image.jpg');
-                await tempFile.writeAsBytes(response.bodyBytes);
-
-                // 이미지와 텍스트 공유
-                await Share.shareXFiles(
-                  [XFile(tempFile.path)],
-                  text: '${diary.title}\n\n${diary.content}',
-                );
+                if (await File(diary.imageLocalPath).exists()) {
+                  await Share.shareXFiles(
+                    [XFile(diary.imageLocalPath)],
+                    text: '${diary.title}\n\n${diary.content}',
+                    subject: diary.title,
+                  );
+                } else {
+                  debugPrint('로컬 이미지 파일을 찾을 수 없습니다: ${diary.imageLocalPath}');
+                }
               } catch (e) {
                 debugPrint('공유 중 오류 발생: $e');
               }
@@ -103,4 +101,4 @@ class DiaryDetailScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}
