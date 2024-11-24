@@ -82,55 +82,57 @@ class ImageGenerationScreen extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                   ),
-                  Container(
-                    color: const Color(0xFF1A1A1A),
-                    padding: const EdgeInsets.all(16),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: FloatingActionButton.extended(
-                        elevation: 0,
-                        onPressed: () async {
-                          try {
-                            final imagePath =
-                                await GalleryService.saveUrlToFile(
-                                    diary.imageUrl, diary.title);
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              color: const Color(0xFF1A1A1A),
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: FloatingActionButton.extended(
+                  elevation: 0,
+                  onPressed: () async {
+                    try {
+                      final imagePath = await GalleryService.saveUrlToFile(
+                          diary.imageUrl, diary.title);
 
-                            await DiaryService.createDiary(
-                              title: diary.title,
-                              content: diary.content,
-                              imageUrl: diary.imageUrl,
-                              userId: diary.userId,
-                              imageLocalPath: imagePath,
-                              date: diary.date,
-                            );
+                      await DiaryService.createDiary(
+                        title: diary.title,
+                        content: diary.content,
+                        imageUrl: diary.imageUrl,
+                        userId: diary.userId,
+                        imageLocalPath: imagePath,
+                        date: diary.date,
+                      );
 
-                            if (context.mounted) {
-                              context.go('/');
-                            }
-                          } catch (e) {
-                            debugPrint(e.toString());
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text('이미지 저장 중 오류가 발생했습니다!!!: $e')),
-                              );
-                            }
-                          }
-                        },
-                        label: const Text(
-                          'Confirm',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        backgroundColor: const Color(0xFF4D4EE8),
-                      ),
+                      if (context.mounted) {
+                        context.go('/home');
+                      }
+                    } catch (e) {
+                      debugPrint(e.toString());
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('이미지 저장 중 오류가 발생했습니다!!!: $e')),
+                        );
+                      }
+                    }
+                  },
+                  label: const Text(
+                    'Confirm',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
+                  backgroundColor: const Color(0xFF4D4EE8),
+                ),
               ),
             ),
           ),

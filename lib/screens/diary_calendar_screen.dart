@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:vivid_diary/widgets/diary_list.dart';
 import 'package:vivid_diary/providers/diary_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:vivid_diary/providers/diary_input_provider.dart';
 
 class DiaryCalendarScreen extends StatefulWidget {
   const DiaryCalendarScreen({super.key});
@@ -12,28 +13,9 @@ class DiaryCalendarScreen extends StatefulWidget {
 }
 
 class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  // Provider getter 추가
-  DiaryProvider get _diaryProvider =>
-      Provider.of<DiaryProvider>(context, listen: false);
-
-  // 테스트용 데이터
-  final Map<DateTime, String> _diaryImages = {
-    DateTime.utc(2024, 3, 15): 'https://picsum.photos/100',
-    DateTime.utc(2024, 3, 20): 'https://picsum.photos/101',
-    DateTime.utc(2024, 3, 25): 'https://picsum.photos/102',
-  };
-
   @override
   void initState() {
     super.initState();
-    _diaryProvider.getDiariesForDate(_diaryProvider.selectedDate);
-  }
-
-  bool isSameDate(DateTime? a, DateTime? b) {
-    if (a == null || b == null) return false;
-    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   @override
@@ -42,9 +24,9 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildCalendar(),
-            Expanded(
-              child: RecentDiaryList(diaries: _diaryProvider.diaries),
+            _buildCalendar(context),
+            const Expanded(
+              child: RecentDiaryList(),
             ),
           ],
         ),
@@ -52,26 +34,25 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
     );
   }
 
-  Widget _buildCalendar() {
+  Widget _buildCalendar(BuildContext context) {
     const textColor = Color(0xFFD6D7DC);
 
+    final diaryProvider = context.watch<DiaryProvider>();
+    final diaryInputProvider = context.watch<DiaryInputProvider>();
     return TableCalendar(
       firstDay: DateTime.utc(2021, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: _diaryProvider.focusedDate,
-      calendarFormat: _calendarFormat,
+      focusedDay: diaryProvider.focusedDate,
       selectedDayPredicate: (day) {
-        return isSameDay(_diaryProvider.selectedDate, day);
+        return isSameDay(diaryProvider.selectedDate, day);
       },
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          _diaryProvider.setSelectedDate(selectedDay);
-        });
+      onDaySelected: (selectedDay, focusedDay) async {
+        await diaryProvider.setSelectedDate(selectedDay);
+        diaryInputProvider.setDate(selectedDay.toString());
       },
-      onFormatChanged: (format) {
-        setState(() {
-          _calendarFormat = format;
-        });
+      onPageChanged: (focusedDay) async {
+        final diaryProvider = context.read<DiaryProvider>();
+        await diaryProvider.setFocusedDate(focusedDay);
       },
       calendarStyle: const CalendarStyle(
         // 날짜 스타일
@@ -85,11 +66,12 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
           shape: BoxShape.circle,
         ),
         selectedTextStyle: TextStyle(color: Color(0xFF04172C)),
+        // 오늘 날짜 데코레이션 제거
         todayDecoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.transparent, // 배경색 투명하게
+          color: Colors.transparent,
         ),
-        todayTextStyle: TextStyle(color: textColor), // 일반 날짜와 동일한 색상
+        todayTextStyle: TextStyle(color: textColor),
       ),
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
@@ -107,46 +89,45 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
       ),
       calendarBuilders: CalendarBuilders(
         defaultBuilder: (context, day, focusedDay) {
-          return _buildCalendarCell(
-              day, isSameDay(_diaryProvider.selectedDate, day));
+          return _buildCalendarCell(diaryProvider.diaryDates, day,
+              isSameDay(diaryProvider.selectedDate, day), false);
+        },
+        markerBuilder: (context, day, events) {
+          if (day.weekday == DateTime.saturday ||
+              day.weekday == DateTime.sunday) {
+            return _buildCalendarCell(diaryProvider.diaryDates, day,
+                isSameDay(diaryProvider.selectedDate, day), true);
+          }
+          return null;
         },
       ),
     );
   }
 
-  Widget? _buildCalendarCell(DateTime day, bool isSelected) {
-    for (DateTime date in _diaryImages.keys) {
-      if (isSameDate(date, day)) {
-        return Container(
-          margin: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: isSelected
-                ? Border.all(color: const Color(0xFFFFAF7E), width: 2)
-                : null,
+  Widget? _buildCalendarCell(
+      List<int> diaryDates, DateTime date, bool isSelected, bool isWeekend) {
+    if (diaryDates.contains(date.day)) {
+      return Container(
+        margin: const EdgeInsets.all(4),
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFFFFAF7E),
+        ),
+        child: Center(
+          child: Text(
+            '${date.day}',
+            style: const TextStyle(color: Colors.white),
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Text(
-                '${day.day}',
-                style: const TextStyle(
-                  color: Color(0xFFD6D7DC),
-                ),
-              ),
-              const Positioned(
-                bottom: 2,
-                child: Icon(
-                  Icons.star,
-                  size: 8,
-                  color: Color(0xFFFFAF7E),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
+        ),
+      );
     }
-    return null;
+    return Center(
+      child: Text(
+        '${date.day}',
+        style: TextStyle(
+          color: isWeekend ? const Color(0xFFF74D4D) : const Color(0xFFD6D7DC),
+        ),
+      ),
+    );
   }
 }
