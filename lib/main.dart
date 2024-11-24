@@ -14,25 +14,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-
   await PermissionService.checkAndRequestStoragePermission();
+
   final initialRoute = await RouteService.determineInitialRoute();
 
   final dbHelper = DatabaseHelper.instance;
   await dbHelper.database;
 
-  await DatabaseHelper.instance.deleteDatabase();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => DiaryInputProvider()),
         ChangeNotifierProvider(create: (_) => DiaryProvider()),
-        // 다른 provider들...
       ],
       child: MyApp(initialRoute: initialRoute),
     ),
@@ -52,6 +49,7 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AuthStateHandler.initAuthStateListener(context);
     });

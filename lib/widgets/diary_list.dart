@@ -1,17 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:vivid_diary/models/diary.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vivid_diary/providers/diary_provider.dart';
+import 'package:provider/provider.dart';
 
 class RecentDiaryList extends StatelessWidget {
-  final List<Diary> diaries;
-
   const RecentDiaryList({
     super.key,
-    required this.diaries,
   });
 
   @override
   Widget build(BuildContext context) {
+    final diaries = context.watch<DiaryProvider>().diaries;
     return Column(
       children: [
         Padding(
@@ -49,50 +50,56 @@ class RecentDiaryList extends StatelessWidget {
                   color: const Color(0xFF141414),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          diary.imageUrl,
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
+                child: InkWell(
+                  onTap: () {
+                    context.push('/diary-detail', extra: diary);
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            File(diary.imageLocalPath),
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              diary.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFFFF0E9),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                diary.title,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFFFF0E9),
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              diary.content,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFFFF0E9),
+                              const SizedBox(height: 4),
+                              Text(
+                                diary.content,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFFF0E9),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

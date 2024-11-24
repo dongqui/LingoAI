@@ -1,40 +1,21 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/diary.dart';
 import '../database/database_helper.dart';
 
 class DiaryService {
-  static Future<Diary> createDiary(
+  static Future<void> createDiary(
       {title, content, imageUrl, userId, imageLocalPath, date}) async {
-    // Supabase에 저장
-    final supabase = Supabase.instance.client;
-
-    final response = await supabase
-        .from('diaries')
-        .insert({
-          'title': title,
-          'content': content,
-          'imageUrl': imageUrl,
-          'userId': userId,
-          'date': date,
-        })
-        .select()
-        .single();
-
-    // Supabase에서 반환된 ID로 Diary 객체 업데이트
-    final updatedDiary = Diary(
-      id: response['id'],
-      title: response['title'],
-      content: response['content'],
-      imageUrl: response['imageUrl'],
-      userId: response['userId'],
-      createdAt: response['createdAt'],
-      updatedAt: response['updatedAt'],
+    final diary = Diary(
+      id: 0,
+      title: title,
+      content: content,
+      imageUrl: imageUrl,
+      userId: userId,
       imageLocalPath: imageLocalPath,
-      date: response['date'],
+      date: date,
+      createdAt: DateTime.now().toIso8601String(),
+      updatedAt: DateTime.now().toIso8601String(),
     );
 
-    await DatabaseHelper.instance.insertDiary(updatedDiary);
-
-    return updatedDiary;
+    await DatabaseHelper.instance.insertDiary(diary);
   }
 }
