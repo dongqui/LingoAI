@@ -11,14 +11,13 @@ class ImageGenerationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final diary = Provider.of<DiaryInputProvider>(context);
+    final diaryInputProvider = Provider.of<DiaryInputProvider>(context);
+    final diaryProvider = Provider.of<DiaryProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Generated Image'),
+        title: const Text('Preview'),
         centerTitle: true,
-        backgroundColor: Colors.black,
-        elevation: 0,
       ),
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -37,19 +36,28 @@ class ImageGenerationScreen extends StatelessWidget {
                       aspectRatio: 1,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          diary.imageUrl,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
+                        child: FutureBuilder<void>(
+                          future: precacheImage(
+                              NetworkImage(diaryInputProvider.imageUrl),
+                              context),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return Image.network(
+                                diaryInputProvider.imageUrl,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            }
                             return Container(
                               width: double.infinity,
                               height: double.infinity,
                               color: Colors.grey[850],
                               child: const Center(
-                                child: CircularProgressIndicator(),
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF4D4EE8),
+                                ),
                               ),
                             );
                           },
@@ -61,7 +69,7 @@ class ImageGenerationScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      diary.title,
+                      diaryInputProvider.title,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -73,7 +81,7 @@ class ImageGenerationScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      diary.content,
+                      diaryInputProvider.content,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -85,70 +93,86 @@ class ImageGenerationScreen extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              color: const Color(0xFF1A1A1A),
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
+        ],
+      ),
+      floatingActionButton: Container(
+        width: MediaQuery.of(context).size.width,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Opacity(
+                opacity: diaryProvider.isAddingDiary ? 0.5 : 1.0,
                 child: FloatingActionButton.extended(
-                  elevation: 0,
-                  backgroundColor: context.watch<DiaryProvider>().isAddingDiary
-                      ? const Color(0xFF4D4EE8).withOpacity(0.5)
-                      : const Color(0xFF4D4EE8),
-                  onPressed: context.watch<DiaryProvider>().isAddingDiary
+                  heroTag: 'regenerate',
+                  onPressed: diaryProvider.isAddingDiary
                       ? null
-                      : () async {
+                      : () {
                           try {
-                            final diaryProvider = context.read<DiaryProvider>();
-                            await diaryProvider.addDiary(
-                              title: diary.title,
-                              content: diary.content,
-                              imageUrl: diary.imageUrl,
-                              userId: diary.userId,
-                              date: diary.date,
-                            );
-
-                            if (context.mounted) {
-                              context.go('/home');
-                            }
+                            context.push('/regenerate',
+                                extra: diaryInputProvider.imageUrl);
                           } catch (e) {
-                            debugPrint(e.toString());
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text('이미지 저장 중 오류가 발생했습니다!!!: $e')),
-                              );
-                            }
+                            print('Error: $e');
                           }
                         },
-                  label: context.watch<DiaryProvider>().isAddingDiary
+                  label: const Text(
+                    'Try Again',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  backgroundColor: Colors.grey[800],
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Opacity(
+                opacity: diaryProvider.isAddingDiary ? 0.5 : 1.0,
+                child: FloatingActionButton.extended(
+                  onPressed: diaryProvider.isAddingDiary
+                      ? null
+                      : () async {
+                          await diaryProvider.addDiary(
+                            title: diaryInputProvider.title,
+                            content: diaryInputProvider.content,
+                            imageUrl: diaryInputProvider.imageUrl,
+                            userId: diaryInputProvider.userId,
+                            date: diaryInputProvider.date,
+                          );
+                          diaryInputProvider.resetAll();
+                          if (context.mounted) {
+                            context.replace('/home');
+                          }
+                        },
+                  label: diaryProvider.isAddingDiary
                       ? const SizedBox(
-                          width: 24,
-                          height: 24,
+                          height: 20,
+                          width: 20,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2,
                           ),
                         )
                       : const Text(
-                          'Confirm',
+                          'Save',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                  backgroundColor: const Color(0xFF4D4EE8),
                 ),
               ),
-            ),
-          ),
-        ],
+            )
+          ],
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
