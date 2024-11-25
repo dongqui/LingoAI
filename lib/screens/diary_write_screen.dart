@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/diary_input_provider.dart';
-import '../screens/image_generation_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class DiaryWriteScreen extends StatelessWidget {
   final TextEditingController _titleController = TextEditingController();
@@ -17,7 +17,7 @@ class DiaryWriteScreen extends StatelessWidget {
       children: [
         Scaffold(
           appBar: AppBar(
-            title: const Text('Write Diary'),
+            title: const Text('Today\'s Story'),
             centerTitle: true,
           ),
           body: SingleChildScrollView(
@@ -44,7 +44,7 @@ class DiaryWriteScreen extends StatelessWidget {
                   onChanged: (value) => diaryProvider.setTitle(value),
                   cursorColor: const Color(0xFF4D4EE8),
                   decoration: const InputDecoration(
-                    hintText: '제목을 입력하세요',
+                    hintText: 'Title here',
                     hintStyle: TextStyle(color: Colors.white24),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.all(16),
@@ -82,7 +82,7 @@ class DiaryWriteScreen extends StatelessWidget {
                   cursorColor: const Color(0xFF4D4EE8),
                   maxLines: 10,
                   decoration: const InputDecoration(
-                    hintText: '오늘의 이야기를 들려주세요',
+                    hintText: 'Write about your day',
                     hintStyle: TextStyle(color: Colors.white24),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -115,18 +115,20 @@ class DiaryWriteScreen extends StatelessWidget {
                 FocusScope.of(context).unfocus();
                 final diaryProvider =
                     Provider.of<DiaryInputProvider>(context, listen: false);
-                await diaryProvider.generateImage();
+                await diaryProvider.generateImage(context);
 
-                if (!context.mounted) return;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const ImageGenerationScreen(),
-                  ),
-                );
+                if (context.mounted) {
+                  context.push('/image-generation');
+                }
               },
               label: const Text(
-                'Generate a image',
-                style: TextStyle(color: Colors.white),
+                'Make it Visual',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
               ),
               backgroundColor: const Color(0xFF4D4EE8),
             ),
@@ -134,15 +136,6 @@ class DiaryWriteScreen extends StatelessWidget {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
         ),
-        if (diaryProvider.isLoading)
-          Container(
-            color: const Color(0xFF1A1A1A),
-            child: const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF4D4EE8),
-              ),
-            ),
-          ),
       ],
     );
   }
