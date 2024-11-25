@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,26 +17,33 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initialize() async {
-    // 필요한 초기화 작업 수행
-    await Future.delayed(const Duration(seconds: 2)); // 최소 표시 시간
-
+    await Future.delayed(const Duration(seconds: 3)); // 애니메이션을 위해 시간 증가
     if (mounted) {
-      // 현재 인증 상태에 따라 적절한 화면으로 이동
-      // final isLoggedIn = Supabase.instance.client.auth.currentUser != null;
-      // if (isLoggedIn) {
-
-      // } else {
-      //   context.go('/login');
-      // }
       context.go('/home');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface, // 또는 background
       body: Center(
-        child: CircularProgressIndicator(),
+        child: DefaultTextStyle(
+          style: const TextStyle(
+            fontSize: 40.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          child: AnimatedTextKit(
+            animatedTexts: [
+              TypewriterAnimatedText(
+                'Vivid Diary',
+                speed: const Duration(milliseconds: 200),
+              ),
+            ],
+            totalRepeatCount: 1,
+          ),
+        ),
       ),
     );
   }
