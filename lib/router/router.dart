@@ -6,6 +6,8 @@ import 'package:vivid_diary/screens/diary_calendar_screen.dart';
 import 'package:vivid_diary/screens/diary_write_screen.dart';
 import 'package:vivid_diary/screens/diary_detail_screen.dart';
 import 'package:vivid_diary/models/diary.dart';
+import 'package:vivid_diary/screens/image_regenerate_screen.dart';
+import 'package:vivid_diary/screens/image_generation_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -34,6 +36,7 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
+      name: 'splash',
       builder: (context, state) => const SplashScreen(),
     ),
     // GoRoute(
@@ -42,6 +45,7 @@ final router = GoRouter(
     // ),
     GoRoute(
       path: '/home',
+      name: 'home',
       builder: (context, state) => const DiaryCalendarScreen(),
     ),
     GoRoute(
@@ -51,9 +55,22 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/diary-detail',
+      name: 'diary-detail',
       builder: (context, state) => DiaryDetailScreen(
         diary: state.extra as Diary,
       ),
+    ),
+    GoRoute(
+      path: '/regenerate',
+      name: 'regenerate',
+      builder: (context, state) => ImageRegenerateScreen(
+        currentImageUrl: state.extra as String,
+      ),
+    ),
+    GoRoute(
+      path: '/image-generation',
+      name: 'image-generation',
+      builder: (context, state) => const ImageGenerationScreen(),
     ),
   ],
 );

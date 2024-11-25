@@ -7,9 +7,10 @@ class ImageGenerationService {
     required String content,
     required String title,
     required String userId,
+    required String extraPromtp,
   }) async {
-    // const apiUrl = dotenv.env['LOCAL_IMAGE_GENERATION_API_URL'];
-    var apiUrl = dotenv.env['PRODUCTION_IMAGE_GENERATION_API_URL'];
+    // final apiUrl = dotenv.env['LOCAL_IMAGE_GENERATION_API_URL'];
+    final apiUrl = dotenv.env['PRODUCTION_IMAGE_GENERATION_API_URL'];
 
     if (apiUrl == null) {
       throw Exception('API URL이 설정되지 않았습니다.');
@@ -25,6 +26,7 @@ class ImageGenerationService {
           'content': content,
           'title': title,
           'userId': userId,
+          'extraPromtp': extraPromtp,
         }),
       );
 
