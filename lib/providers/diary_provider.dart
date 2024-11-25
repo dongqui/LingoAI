@@ -76,9 +76,10 @@ class DiaryProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      print('imageUrl: $imageUrl');
       final imageLocalPath =
           await GalleryService.saveUrlToFile(imageUrl, title);
-
+      print('imageLocalPath: $imageLocalPath');
       await DiaryService.createDiary(
         title: title,
         content: content,
@@ -92,6 +93,18 @@ class DiaryProvider with ChangeNotifier {
       diaryDates = await getDiaryDates(_focusedDate);
     } finally {
       _isAddingDiary = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteDiary(int id) async {
+    final index = _diaries.indexWhere((diary) => diary.id == id);
+    if (index != -1) {
+      await DatabaseHelper.instance.deleteDiary(id);
+
+      _diaries = await DatabaseHelper.instance.getDiariesForDate(_selectedDate);
+      diaryDates = await getDiaryDates(_focusedDate);
+
       notifyListeners();
     }
   }

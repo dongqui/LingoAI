@@ -95,4 +95,13 @@ class DatabaseHelper {
       return Diary.fromMap(maps[i]);
     });
   }
+
+  Future<int> deleteDiary(int id) async {
+    final db = await database;
+    return await db.delete(
+      'diaries',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
