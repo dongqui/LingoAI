@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-// import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../ad-helper.dart';
+// TODO: Import google_mobile_ads.dart
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import '../providers/diary_input_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class AdLoadingScreen extends StatefulWidget {
-  const AdLoadingScreen({super.key});
+  final InterstitialAd? interstitialAd;
+  const AdLoadingScreen({super.key, this.interstitialAd});
 
   @override
   State<AdLoadingScreen> createState() => _AdLoadingScreenState();
 }
 
 class _AdLoadingScreenState extends State<AdLoadingScreen> {
-  // InterstitialAd? _interstitialAd;
+  InterstitialAd? _interstitialAd;
   bool _isAdDone = false;
 
   @override
@@ -27,18 +30,16 @@ class _AdLoadingScreenState extends State<AdLoadingScreen> {
       _isAdDone = true;
     });
 
-    // 기존 광고 로딩 코드 주석 처리
-    /*
     InterstitialAd.load(
-      adUnitId: 'your_ad_unit_id_here',
+      adUnitId: AdHelper.interstitialAdUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-          _interstitialAd = ad;
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (_) {
               setState(() {
                 _isAdDone = true;
+                _interstitialAd = ad;
               });
             },
           );
@@ -48,16 +49,16 @@ class _AdLoadingScreenState extends State<AdLoadingScreen> {
           setState(() {
             _isAdDone = true;
           });
+          _interstitialAd?.dispose();
           debugPrint('Ad load failed: $error');
         },
       ),
     );
-    */
   }
 
   @override
   void dispose() {
-    // _interstitialAd?.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 

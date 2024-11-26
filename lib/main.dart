@@ -8,7 +8,7 @@ import 'providers/diary_input_provider.dart';
 import './services/permission_service.dart';
 import './database/database_helper.dart';
 import 'providers/diary_provider.dart';
-
+import 'ad-helper.dart';
 // import './services/route_service.dart';
 
 void main() async {
@@ -20,7 +20,7 @@ void main() async {
   //   anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   // );
   await PermissionService.checkAndRequestStoragePermission();
-
+  await AdHelper.initGoogleMobileAds();
   // final initialRoute = await RouteService.determineInitialRoute();
 
   final dbHelper = DatabaseHelper.instance;
