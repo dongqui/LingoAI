@@ -18,6 +18,7 @@ class ImageGenerationScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Preview'),
         centerTitle: true,
+        scrolledUnderElevation: 0,
       ),
       resizeToAvoidBottomInset: false,
       body: Stack(

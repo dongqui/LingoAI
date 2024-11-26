@@ -19,6 +19,7 @@ class ImageRegenerateScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Customize Image'),
+        scrolledUnderElevation: 0,
         centerTitle: true,
       ),
       body: SingleChildScrollView(

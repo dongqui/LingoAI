@@ -3,11 +3,17 @@ import 'package:provider/provider.dart';
 import '../providers/diary_input_provider.dart';
 import 'package:go_router/go_router.dart';
 
-class DiaryWriteScreen extends StatelessWidget {
+class DiaryWriteScreen extends StatefulWidget {
+  const DiaryWriteScreen({super.key});
+
+  @override
+  State<DiaryWriteScreen> createState() => _DiaryWriteScreenState();
+}
+
+class _DiaryWriteScreenState extends State<DiaryWriteScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _storyController = TextEditingController();
-
-  DiaryWriteScreen({super.key});
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +25,10 @@ class DiaryWriteScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Today\'s Story'),
             centerTitle: true,
+            scrolledUnderElevation: 0,
           ),
           body: SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.only(bottom: 80),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,11 +49,13 @@ class DiaryWriteScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 TextField(
                   controller: _titleController,
+                  maxLength: 50,
                   onChanged: (value) => diaryProvider.setTitle(value),
                   cursorColor: const Color(0xFF4D4EE8),
                   decoration: const InputDecoration(
                     hintText: 'Title here',
                     hintStyle: TextStyle(color: Colors.white24),
+                    counterStyle: TextStyle(color: Colors.white54),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.all(16),
                     enabledBorder: OutlineInputBorder(
@@ -78,12 +88,25 @@ class DiaryWriteScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 TextField(
                   controller: _storyController,
+                  maxLength: 500,
+                  maxLines: 10,
+                  onTap: () {
+                    if (mounted) {
+                      if (_scrollController.hasClients) {
+                        _scrollController.animateTo(
+                          _scrollController.position.maxScrollExtent,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        );
+                      }
+                    }
+                  },
                   onChanged: (value) => diaryProvider.setContent(value),
                   cursorColor: const Color(0xFF4D4EE8),
-                  maxLines: 10,
                   decoration: const InputDecoration(
                     hintText: 'Write about your day',
                     hintStyle: TextStyle(color: Colors.white24),
+                    counterStyle: TextStyle(color: Colors.white54),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 16,

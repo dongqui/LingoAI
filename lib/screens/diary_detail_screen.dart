@@ -22,9 +22,10 @@ class DiaryDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Diary Detail'),
+        title: const Text('My Story'),
         centerTitle: true,
         backgroundColor: Colors.black,
+        scrolledUnderElevation: 0,
         elevation: 0,
         actions: [
           IconButton(
@@ -119,7 +120,8 @@ class DiaryDetailScreen extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: FutureBuilder<void>(
-                    future: precacheImage(NetworkImage(diary.imageUrl), context),
+                    future:
+                        precacheImage(NetworkImage(diary.imageUrl), context),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         return Image.network(
