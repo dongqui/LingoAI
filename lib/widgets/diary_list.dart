@@ -86,7 +86,7 @@ class RecentDiaryList extends StatelessWidget {
                           ),
                           child: InkWell(
                             onTap: () {
-                              context.push('/diary-detail', extra: diary);
+                              context.push('/diary/${diary.id}');
                             },
                             borderRadius: BorderRadius.circular(16),
                             child: Row(

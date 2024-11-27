@@ -54,24 +54,23 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
         final diaryProvider = context.read<DiaryProvider>();
         await diaryProvider.setFocusedDate(focusedDay);
       },
-      calendarStyle: const CalendarStyle(
+      calendarStyle: CalendarStyle(
         // 날짜 스타일
-        defaultTextStyle: TextStyle(color: textColor),
-        weekendTextStyle: TextStyle(color: Color(0xFFF74D4D)),
-        outsideTextStyle: TextStyle(color: Color(0x80D6D7DC)), // 투명도 50%
+        defaultTextStyle: const TextStyle(color: textColor),
+        weekendTextStyle: const TextStyle(color: Color(0xFFF74D4D)),
+        outsideTextStyle: const TextStyle(color: Color(0x80D6D7DC)), // 투명도 50%
 
         // 선택된 날짜 스타일
-        selectedDecoration: BoxDecoration(
+        selectedDecoration: const BoxDecoration(
           color: Color(0xFF4D4EE1),
           shape: BoxShape.circle,
         ),
-        selectedTextStyle: TextStyle(color: Color(0xFF04172C)),
-        // 오늘 날짜 데코레이션 제거
+        selectedTextStyle: const TextStyle(color: Color(0xFF04172C)),
+        // 오늘 날짜 스타일 수정
         todayDecoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.transparent,
+          border: Border.all(color: const Color(0xFF4D4EE1), width: 1.5),
         ),
-        todayTextStyle: TextStyle(color: textColor),
       ),
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
