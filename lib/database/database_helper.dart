@@ -104,4 +104,25 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
+  Future<int> updateDiary(
+      {required int id, required String title, required String content}) async {
+    final db = await database;
+    return await db.update(
+      'diaries',
+      {'title': title, 'content': content},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<Diary> getDiaryById(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'diaries',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return Diary.fromMap(maps.first);
+  }
 }

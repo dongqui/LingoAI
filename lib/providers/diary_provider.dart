@@ -76,10 +76,9 @@ class DiaryProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      print('imageUrl: $imageUrl');
       final imageLocalPath =
           await GalleryService.saveUrlToFile(imageUrl, title);
-      print('imageLocalPath: $imageLocalPath');
+
       await DiaryService.createDiary(
         title: title,
         content: content,
@@ -106,6 +105,35 @@ class DiaryProvider with ChangeNotifier {
       diaryDates = await getDiaryDates(_focusedDate);
 
       notifyListeners();
+    }
+  }
+
+  Future<void> updateDiary({
+    required int id,
+    required String title,
+    required String content,
+  }) async {
+    try {
+      await DatabaseHelper.instance.updateDiary(
+        id: id,
+        title: title,
+        content: content,
+      );
+
+      _diaries = await DatabaseHelper.instance.getDiariesForDate(_selectedDate);
+      // diaryDates = await getDiaryDates(_focusedDate);
+
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Diary> getDiary(int id) async {
+    try {
+      return await DatabaseHelper.instance.getDiaryById(id);
+    } catch (e) {
+      rethrow;
     }
   }
 }
