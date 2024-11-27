@@ -39,6 +39,8 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
 
     final diaryProvider = context.watch<DiaryProvider>();
     final diaryInputProvider = context.watch<DiaryInputProvider>();
+
+    diaryInputProvider.setDate(diaryProvider.selectedDate.toString());
     return TableCalendar(
       firstDay: DateTime.utc(2021, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
@@ -91,16 +93,22 @@ class _DiaryCalendarScreenState extends State<DiaryCalendarScreen> {
           final isWeekend = day.weekday == DateTime.saturday ||
               day.weekday == DateTime.sunday;
 
-          return _buildCalendarCell(diaryProvider.diaryDates, day,
-              isSameDay(diaryProvider.selectedDate, day), isWeekend);
+          return _buildCalendarCell(
+              diaryProvider.diaryDates,
+              day,
+              isSameDay(diaryProvider.selectedDate, day),
+              isWeekend,
+              diaryProvider.focusedDate);
         },
       ),
     );
   }
 
-  Widget? _buildCalendarCell(
-      List<int> diaryDates, DateTime date, bool isSelected, bool isWeekend) {
-    if (diaryDates.contains(date.day) && !isSelected) {
+  Widget? _buildCalendarCell(List<int> diaryDates, DateTime date,
+      bool isSelected, bool isWeekend, DateTime focusedDate) {
+    if (focusedDate.month == date.month &&
+        diaryDates.contains(date.day) &&
+        !isSelected) {
       return Container(
         margin: const EdgeInsets.all(6),
         decoration: const BoxDecoration(
