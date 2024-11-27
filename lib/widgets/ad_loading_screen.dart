@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../ad-helper.dart';
-// TODO: Import google_mobile_ads.dart
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import '../providers/diary_input_provider.dart';
@@ -70,7 +69,9 @@ class _AdLoadingScreenState extends State<AdLoadingScreen> {
 
         if (!provider.isGeneratingImage && mounted && _isAdDone) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.replace('/image-generation');
+            if (!context.mounted) return;
+            Navigator.of(context).pop(); // 다이얼로그 닫기
+            context.go('/image-generation'); // GoRouter 사용
           });
         }
 

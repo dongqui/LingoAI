@@ -115,7 +115,7 @@ class ImageRegenerateScreen extends StatelessWidget {
                   await diaryProvider.generateImage(context);
 
                   if (context.mounted) {
-                    context.push('/image-generation');
+                    context.replace('/image-generation');
                   }
                 },
                 label: const Text(

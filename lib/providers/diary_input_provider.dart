@@ -11,6 +11,7 @@ class DiaryInputProvider with ChangeNotifier {
   bool _isGeneratingImage = false;
   String _prompt = '';
   final ImageGenerationService _imageService = ImageGenerationService();
+  bool _isAdLoading = false;
 
   String get title => _title;
   String get content => _content;
@@ -19,6 +20,7 @@ class DiaryInputProvider with ChangeNotifier {
   bool get isGeneratingImage => _isGeneratingImage;
   String get date => _date;
   String get prompt => _prompt;
+  bool get isAdLoading => _isAdLoading;
 
   void setDate(String date) {
     _date = date;
@@ -38,13 +40,17 @@ class DiaryInputProvider with ChangeNotifier {
 
   Future<void> generateImage(BuildContext context) async {
     _isGeneratingImage = true;
+    _isAdLoading = true;
     notifyListeners();
 
     if (context.mounted) {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const AdLoadingScreen(),
+        builder: (context) => const PopScope(
+          canPop: false,
+          child: AdLoadingScreen(),
+        ),
       );
     }
 
@@ -59,6 +65,7 @@ class DiaryInputProvider with ChangeNotifier {
       debugPrint('이미지 생성 오류: $e');
     } finally {
       _isGeneratingImage = false;
+      _isAdLoading = false;
       notifyListeners();
     }
   }
