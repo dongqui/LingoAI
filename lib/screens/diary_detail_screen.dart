@@ -97,8 +97,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                   onPressed: () async {
                     try {
                       if (await File(_diary!.imageLocalPath).exists()) {
+                        final file = XFile(_diary!.imageLocalPath,
+                            mimeType: 'image/png');
                         await Share.shareXFiles(
-                          [XFile(_diary!.imageLocalPath)],
+                          [file],
                           text: '${_diary!.title}\n\n${_diary!.content}',
                           subject: _diary!.title,
                         );
