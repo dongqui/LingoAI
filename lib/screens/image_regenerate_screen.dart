@@ -113,10 +113,6 @@ class ImageRegenerateScreen extends StatelessWidget {
                   FocusScope.of(context).unfocus();
 
                   await diaryProvider.generateImage(context);
-
-                  if (context.mounted) {
-                    context.replace('/image-generation');
-                  }
                 },
                 label: const Text(
                   'Generate New Image',

@@ -12,7 +12,9 @@ class DiaryInputProvider with ChangeNotifier {
   String _prompt = '';
   final ImageGenerationService _imageService = ImageGenerationService();
   bool _isAdLoading = false;
+  bool _isError = false;
 
+  bool get isError => _isError;
   String get title => _title;
   String get content => _content;
   String get imageUrl => _imageUrl;
@@ -41,6 +43,7 @@ class DiaryInputProvider with ChangeNotifier {
   Future<void> generateImage(BuildContext context) async {
     _isGeneratingImage = true;
     _isAdLoading = true;
+    _isError = false;
     notifyListeners();
 
     if (context.mounted) {
@@ -62,6 +65,7 @@ class DiaryInputProvider with ChangeNotifier {
         extraPromtp: _prompt,
       );
     } catch (e) {
+      _isError = true;
       debugPrint('이미지 생성 오류: $e');
     } finally {
       _isGeneratingImage = false;

@@ -66,12 +66,11 @@ class _AdLoadingScreenState extends State<AdLoadingScreen> {
     return Consumer<DiaryInputProvider>(
       builder: (context, provider, child) {
         // Close the page once image generation is complete
-
         if (!provider.isGeneratingImage && mounted && _isAdDone) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!context.mounted) return;
             Navigator.of(context).pop(); // 다이얼로그 닫기
-            context.go('/image-generation'); // GoRouter 사용
+            context.replace('/image-generation');
+            // GoRouter 사용
           });
         }
 

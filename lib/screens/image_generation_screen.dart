@@ -145,9 +145,9 @@ class ImageGenerationScreen extends StatelessWidget {
                             userId: diaryInputProvider.userId,
                             date: diaryInputProvider.date,
                           );
-                          diaryInputProvider.resetAll();
+
                           if (context.mounted) {
-                            context.replace('/home');
+                            context.push('/home');
                           }
                         },
                   label: diaryProvider.isAddingDiary

@@ -13,7 +13,8 @@ class GalleryService {
       }
 
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/images/$filename');
+      final file = File(
+          '${directory.path}/images/${filename}_${DateTime.now().millisecondsSinceEpoch}');
       await file.create(recursive: true);
       await file.writeAsBytes(response.bodyBytes);
 
